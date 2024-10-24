@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A6A6D2902CCAEFCA00660A7C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = A6A6D28F2CCAEFCA00660A7C /* SDWebImage */; };
 		A6F335032CCA398300898041 /* MovieAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6F334FD2CCA387A00898041 /* MovieAPI.framework */; };
 		A6F335042CCA398300898041 /* MovieAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A6F334FD2CCA387A00898041 /* MovieAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -92,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6A6D2902CCAEFCA00660A7C /* SDWebImage in Frameworks */,
 				A6F335032CCA398300898041 /* MovieAPI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -171,6 +173,7 @@
 			);
 			name = Movie;
 			packageProductDependencies = (
+				A6A6D28F2CCAEFCA00660A7C /* SDWebImage */,
 			);
 			productName = Movie;
 			productReference = A6F334522CCA36A400898041 /* Movie.app */;
@@ -254,6 +257,9 @@
 			);
 			mainGroup = A6F334492CCA36A400898041;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A6A6D28E2CCAEFCA00660A7C /* XCRemoteSwiftPackageReference "SDWebImage" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A6F334532CCA36A400898041 /* Products */;
 			projectDirPath = "";
@@ -629,6 +635,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A6A6D28E2CCAEFCA00660A7C /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.19.7;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A6A6D28F2CCAEFCA00660A7C /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A6A6D28E2CCAEFCA00660A7C /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A6F3344A2CCA36A400898041 /* Project object */;
 }

@@ -6,14 +6,14 @@
 //
 
 import Foundation
+import MovieAPI
 
 final class MockMoviesService: MoviesServiceProtocol {
     
     var movies: [Movie] = []
-    
+
     func fetchMovies(completion: @escaping (Result<MoviesResponse>) -> Void) {
-        let dates = Dates(maximum: "2024-10-30", minimum: "2024-09-18") // Dates nesnesi oluşturuluyor
-        let moviesResponse = MoviesResponse(dates: dates, page: 1, results: movies) // Tüm parametreler MoviesResponse ile veriliyor
-        completion(.success(moviesResponse)) // Tamamlanıyor
+        let moviesResponse = MoviesResponse(results: movies)
+        completion(.success(moviesResponse))
     }
 }

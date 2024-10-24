@@ -8,29 +8,50 @@
 import XCTest
 @testable import Movie
 
+
 final class MovieTests: XCTestCase {
-
+    
+    private var view: MockView!
+    private var viewModel: MovieListViewModel!
+    private var service: MockMoviesService!
+    
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        service = MockMoviesService()
+        viewModel = MovieListViewModel(service: service)
+        view = MockView()
+        viewModel.delegate = view
     }
+    
+    func testLoad() throws {
+           // Given:
+           let movie1 = try ResourceLoader.loadMovie(resource: .movie1)
+           let movie2 = try ResourceLoader.loadMovie(resource: .movie2)
+           service.movies = [movie1, movie2]
+           
+           // When:
+           viewModel.load()
+           
+           // Then:
+           XCTAssertEqual(view.outputs.count, 4)
+           
+           XCTAssertEqual(view.outputs[0], .updateTitle("Movie List")) // Örnek başlık
+           XCTAssertEqual(view.outputs[1], .setLoading(true))
+           XCTAssertEqual(view.outputs[2], .setLoading(false))
+           
+           let expectedMovies = [movie1, movie2].map({ MoviePresentation(movie: $0) })
+           XCTAssertEqual(view.outputs[3], .showMovieList(expectedMovies))
+       }
+   }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+
+
+private class MockView: MovieListViewModelDelegate {
+    
+    var outputs: [MovieListViewModelOutput] = []
+    
+    func handleViewModelOutput(_ output: Movie.MovieListViewModelOutput) {
+        outputs.append(output)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+    
+    
 }

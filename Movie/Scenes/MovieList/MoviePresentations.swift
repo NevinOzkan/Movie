@@ -8,14 +8,16 @@
 import Foundation
 import MovieAPI
 
-struct MoviePresentation {
+struct MoviePresentation: Equatable {
     let title: String
     let detail: String
-}
-
-extension MoviePresentation {
+    let posterPath: String?
+    let releaseDate: String // Yeni tarih özelliği ekleyin
     
     init(movie: Movie) {
-        self.init(title: movie.originalTitle, detail: movie.overview)
+        self.title = movie.originalTitle ?? "Bilinmeyen Başlık"
+        self.detail = movie.overview ?? "Açıklama mevcut değil"
+        self.posterPath = movie.posterPath
+        self.releaseDate = movie.releaseDate ?? "Bilinmeyen Tarih"
     }
 }
