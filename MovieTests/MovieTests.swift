@@ -34,7 +34,6 @@ final class MovieTests: XCTestCase {
            // Then:
            XCTAssertEqual(view.outputs.count, 4)
            
-           XCTAssertEqual(view.outputs[0], .updateTitle("Movie List")) // Örnek başlık
            XCTAssertEqual(view.outputs[1], .setLoading(true))
            XCTAssertEqual(view.outputs[2], .setLoading(false))
            

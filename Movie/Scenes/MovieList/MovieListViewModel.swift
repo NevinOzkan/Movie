@@ -23,16 +23,21 @@ final class MovieListViewModel: MovieListViewModelProtocol {
         notify(.setLoading(true))
         
         service.fetchMovies { [weak self] (result) in
-            guard let strongSelf = self else { return }
-            strongSelf.notify(.setLoading(false))
+            guard let self = self else { return }
+            self.notify(.setLoading(false))
             
             switch result {
             case .success(let response):
                 let movies = response.results
-                let presentations = movies.map({MoviePresentation(movie: $0)})
-                strongSelf.notify(.showMovieList(presentations))
+                self.movies = movies // movies dizisini burada dolduruyoruz
+                let presentations = movies.map { MoviePresentation(movie: $0) }
+                
+                // Burada presentations dizisinin dolduğunu doğrulamak için bir print ekliyoruz
+                print("Movies to Show: \(presentations.count)")
+                
+                self.notify(.showMovieList(presentations))
             case .failure(let error):
-                print(error)
+                print("API Fetch Error: \(error.localizedDescription)")
             }
         }
     }
@@ -44,5 +49,4 @@ final class MovieListViewModel: MovieListViewModelProtocol {
     private func notify(_ output: MovieListViewModelOutput) {
         delegate?.handleViewModelOutput(output)
     }
-    
 }

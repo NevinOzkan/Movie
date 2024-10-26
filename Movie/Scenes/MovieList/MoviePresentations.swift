@@ -12,7 +12,7 @@ struct MoviePresentation: Equatable {
     let title: String
     let detail: String
     let posterPath: String?
-    let releaseDate: String // Yeni tarih özelliği ekleyin
+    let releaseDate: String 
     
     init(movie: Movie) {
         self.title = movie.originalTitle ?? "Bilinmeyen Başlık"
