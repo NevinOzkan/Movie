@@ -13,6 +13,7 @@ class MovieListVC: UIViewController {
     
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var sliderCollectionView: UICollectionView!
     
     private var movieList: [MoviePresentation] = []
     let service: MoviesServiceProtocol = MoviesService()
@@ -36,6 +37,16 @@ class MovieListVC: UIViewController {
         // Verileri yükleyin
         viewModel.load()
         setupUI()
+        setupSliderCollectionViewLayout()
+    }
+    
+    private func setupSliderCollectionViewLayout() {
+        if let layout = sliderCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 0
+            layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 250)
+            sliderCollectionView.isPagingEnabled = true
+        }
     }
     
     private func setupUI() {
@@ -43,6 +54,13 @@ class MovieListVC: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.frame = view.bounds
+        
+        // Ekranın yarısı kadar yükseklik ayarla
+           let screenHeight = UIScreen.main.bounds.height
+           tableView.frame = CGRect(x: 0, y: sliderCollectionView.frame.maxY, width: view.bounds.width, height: screenHeight / 1)
+           
+        
+        
     }
 }
 

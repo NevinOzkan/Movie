@@ -19,6 +19,8 @@ class MovieListCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
+        movieImageView.layer.cornerRadius = 10
+        movieImageView.clipsToBounds = true 
     }
     
     func prepareCell(with model: MoviePresentation) {

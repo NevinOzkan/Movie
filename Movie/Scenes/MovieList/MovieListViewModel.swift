@@ -19,7 +19,6 @@ final class MovieListViewModel: MovieListViewModelProtocol {
     }
     
     func load() {
-        notify(.updateTitle("Movie List"))
         notify(.setLoading(true))
         
         service.fetchMovies { [weak self] (result) in
