@@ -17,12 +17,10 @@ class MovieListVC: UIViewController {
     
     private var movieList: [MoviePresentation] = []
     let service: MoviesServiceProtocol = MoviesService()
+    var viewModel: MovieListViewModelProtocol!
+    var movies: [Movie] = []
+   
     
-    var viewModel: MovieListViewModelProtocol! {
-        didSet {
-            viewModel.delegate = self
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +36,7 @@ class MovieListVC: UIViewController {
         viewModel.load()
         setupUI()
         setupSliderCollectionViewLayout()
+        
     }
     
     private func setupSliderCollectionViewLayout() {
@@ -80,30 +79,66 @@ extension MovieListVC: MovieListViewModelDelegate {
                 self.tableView.reloadData() // Tabloyu güncelle
             }
         }
+        
     }
 }
 
-    extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return movieList.count
-        }
-
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "MovieListCell", for: indexPath) as! MovieListCell
-            let movie = movieList[indexPath.row]
-            cell.prepareCell(with: movie)
-            return cell
-        }
-
-        
-        
-        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 140
-        }
-        
-
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let selectedMovie = movieList[indexPath.row]
-            print("Seçilen Film: \(selectedMovie.title)")
-        }
+extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return movieList.count
     }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MovieListCell", for: indexPath) as! MovieListCell
+        let movie = movieList[indexPath.row]
+        cell.prepareCell(with: movie)
+        return cell
+    }
+    
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 140
+    }
+    
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedMovie = movieList[indexPath.row] // Seçilen filmi al
+        
+        let vc = MovieDetailVC(nibName: "MovieDetailVC", bundle: Bundle.main)
+        viewModel.selectMovie(at: indexPath.row)
+        tableView.deselectRow(at: indexPath, animated: false)
+        vc.movie = selectedMovie // movie özelliğini kullanarak seçilen filmi geçir
+        self.navigationController?.pushViewController(vc, animated: true) // Detay sayfasına geçiş yap
+    }
+}
+    
+extension MovieListVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return movies.count
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieListCollectionCell", for: indexPath) as? MovieListCollectionCell else {
+            fatalError("Error : MovieListCollectionCell")
+        }
+    
+    
+    }
+    
+    //Cell boyutları
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        
+    }
+    
+    //Dikey yatay boşluk
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+}
+
+}
+       
+
+    

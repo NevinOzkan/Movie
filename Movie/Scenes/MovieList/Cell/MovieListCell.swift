@@ -20,18 +20,25 @@ class MovieListCell: UITableViewCell {
         super.awakeFromNib()
         
         movieImageView.layer.cornerRadius = 10
-        movieImageView.clipsToBounds = true 
+        movieImageView.clipsToBounds = true
     }
     
     func prepareCell(with model: MoviePresentation) {
-           titleLabel.text = model.title
-           overviewLabel.text = model.detail
-           dateLabel.text = DateFormatterHelper.formattedDate(from: model.releaseDate)
-           
-           if let posterPath = model.posterPath, let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + posterPath) {
-               movieImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
-           } else {
-               movieImageView.image = UIImage(named: "placeholder")
-           }
-       }
-   }
+        titleLabel.text = model.title
+        overviewLabel.text = model.overview // "detail" yerine "overview"
+        
+        // releaseDate opsiyonel ise açıyoruz
+        if let releaseDate = model.releaseDate {
+            dateLabel.text = DateFormatterHelper.formattedDate(from: releaseDate)
+        } else {
+            dateLabel.text = "N/A" // veya uygun bir varsayılan değer
+        }
+        
+        if let posterPath = model.posterPath,
+           let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + posterPath) {
+            movieImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
+        } else {
+            movieImageView.image = UIImage(named: "placeholder")
+        }
+    }
+}

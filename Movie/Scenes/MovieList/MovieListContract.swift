@@ -19,7 +19,6 @@ enum MovieListViewModelOutput: Equatable {
     case showMovieList([MoviePresentation])
 }
 
-protocol MovieListViewModelDelegate: class {
+protocol MovieListViewModelDelegate: AnyObject {
     func handleViewModelOutput(_ output: MovieListViewModelOutput)
 }
-
