@@ -11,7 +11,6 @@ import SDWebImage
 
 class MovieListVC: UIViewController {
     
-    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var sliderCollectionView: UICollectionView!
     
@@ -19,7 +18,7 @@ class MovieListVC: UIViewController {
     let service: MoviesServiceProtocol = MoviesService()
     var viewModel: MovieListViewModelProtocol!
     var movies: [Movie] = []
-   
+    private var nowPlayingMovies: [MoviePresentation] = []
     
     
     override func viewDidLoad() {
@@ -28,17 +27,25 @@ class MovieListVC: UIViewController {
         viewModel = MovieListViewModel(service: service)
         viewModel.delegate = self
         
-        // Hücreyi kaydet
-        tableView.register(UINib(nibName: "MovieListCell", bundle: nil), forCellReuseIdentifier: "MovieListCell")
-        print("ViewDidLoad çağrıldı")
         
-        // Verileri yükleyin
+        
         viewModel.load()
+        viewModel.loadNowPlayingMovies()
         setupUI()
         setupSliderCollectionViewLayout()
-        
+        sliderCollectionView.delegate = self
+        sliderCollectionView.dataSource = self
+        registerCells()
     }
     
+    private func registerCells() {
+        let nib = UINib(nibName: "MovieListCell", bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: "MovieListCell")
+        
+        let collectionNib = UINib(nibName: "MovieListCollectionCell", bundle: nil)
+        sliderCollectionView.register(collectionNib, forCellWithReuseIdentifier: "MovieListCollectionCell")
+    }
+
     private func setupSliderCollectionViewLayout() {
         if let layout = sliderCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal
@@ -55,18 +62,15 @@ class MovieListVC: UIViewController {
         tableView.frame = view.bounds
         
         // Ekranın yarısı kadar yükseklik ayarla
-           let screenHeight = UIScreen.main.bounds.height
-           tableView.frame = CGRect(x: 0, y: sliderCollectionView.frame.maxY, width: view.bounds.width, height: screenHeight / 1)
-           
-        
-        
+        let screenHeight = UIScreen.main.bounds.height
+        tableView.frame = CGRect(x: 0, y: sliderCollectionView.frame.maxY, width: view.bounds.width, height: screenHeight / 1)
     }
 }
 
 extension MovieListVC: MovieListViewModelDelegate {
     func handleViewModelOutput(_ output: MovieListViewModelOutput) {
-        print("handleViewModelOutput çağrıldı.")  // Yeni eklenen
-         
+        print("handleViewModelOutput çağrıldı.")
+        
         switch output {
         case .updateTitle(let title):
             self.title = title
@@ -74,12 +78,18 @@ extension MovieListVC: MovieListViewModelDelegate {
             UIApplication.shared.isNetworkActivityIndicatorVisible = isLoading
         case .showMovieList(let movieList):
             self.movieList = movieList
-            print("Movie list received with count: \(movieList.count)")  // Yeni eklenen
+            print("Film listesi alındı, sayısı: \(movieList.count)")
             DispatchQueue.main.async {
                 self.tableView.reloadData() // Tabloyu güncelle
+                self.sliderCollectionView.reloadData() // Koleksiyon görünümünü güncelle
+            }
+        case .showNowPlayingMovieList(let nowPlayingMovies):
+            self.nowPlayingMovies = nowPlayingMovies
+            print("Şu anda gösterimde olan filmler alındı, sayısı: \(nowPlayingMovies.count)")
+            DispatchQueue.main.async {
+                self.sliderCollectionView.reloadData() // Koleksiyon görünümünü güncelle
             }
         }
-        
     }
 }
 
@@ -95,12 +105,9 @@ extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140
     }
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedMovie = movieList[indexPath.row] // Seçilen filmi al
@@ -113,32 +120,31 @@ extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
     }
 }
     
+// UICollectionViewDelegate ve DataSource Uzantısı
 extension MovieListVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movies.count
+        return nowPlayingMovies.count // nowPlayingMovies dizisinin eleman sayısını döndür
     }
-    
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieListCollectionCell", for: indexPath) as? MovieListCollectionCell else {
-            fatalError("Error : MovieListCollectionCell")
+            fatalError("Hata: MovieListCollectionCell")
         }
-    
-    
+
+        let movie = nowPlayingMovies[indexPath.item] // nowPlayingMovies dizisinden filmi al
+        cell.prepareCell(with: movie) 
+
+        return cell // Hücreyi döndür
     }
-    
-    //Cell boyutları
+
+    // Cell boyutları
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
-        
     }
-    
-    //Dikey yatay boşluk
+
+    // Dikey yatay boşluk
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 0
+    }
 }
-
-}
-       
-
-    

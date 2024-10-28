@@ -7,18 +7,20 @@
 
 import Foundation
 
+protocol MovieListViewModelDelegate: AnyObject {
+    func handleViewModelOutput(_ output: MovieListViewModelOutput)
+}
+
+enum MovieListViewModelOutput {
+    case updateTitle(String)
+    case setLoading(Bool)
+    case showMovieList([MoviePresentation])
+    case showNowPlayingMovieList([MoviePresentation])
+}
+
 protocol MovieListViewModelProtocol {
     var delegate: MovieListViewModelDelegate? { get set }
     func load()
+    func loadNowPlayingMovies() // Bu satırı ekleyin
     func selectMovie(at index: Int)
-}
-
-enum MovieListViewModelOutput: Equatable {
-    case setLoading(Bool)
-    case updateTitle(String)
-    case showMovieList([MoviePresentation])
-}
-
-protocol MovieListViewModelDelegate: AnyObject {
-    func handleViewModelOutput(_ output: MovieListViewModelOutput)
 }

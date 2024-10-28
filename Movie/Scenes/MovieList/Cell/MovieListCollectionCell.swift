@@ -8,7 +8,7 @@
 import UIKit
 import MovieAPI
 
-class MovieListCollectionCell: UITableViewCell {
+class MovieListCollectionCell: UICollectionViewCell {
 
     
     @IBOutlet weak var ImageView: UIImageView!
@@ -17,14 +17,14 @@ class MovieListCollectionCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        // Initialization code
     }
-
-    func prepareCell(with model: Movie) {
-        movieTitle.text = model.title
-        movieOverview.text = model.overview
-        
-        if let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + model.posterPath!) {
-            ImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
+    func prepareCell(with model: MoviePresentation) {
+            movieTitle.text = model.title
+            movieOverview.text = model.overview
+            
+            if let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + model.posterPath!) {
+                ImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
+            }
         }
     }
-}
