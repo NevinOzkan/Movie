@@ -14,6 +14,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
     private let service: MoviesServiceProtocol
     private var movies: [Movie] = []
     private var nowPlayingMovies: [Movie] = []
+    private var currentPage = 1
 
     init(service: MoviesServiceProtocol) {
         self.service = service
