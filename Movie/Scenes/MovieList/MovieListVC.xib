@@ -10,6 +10,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MovieListVC" customModule="Movie" customModuleProvider="target">
             <connections>
+                <outlet property="activity" destination="rwR-km-bZn" id="Aap-XY-VNy"/>
+                <outlet property="pageControl" destination="j61-cM-ygt" id="1Zh-fD-nkp"/>
                 <outlet property="sliderCollectionView" destination="Huq-KU-sMP" id="Fcn-gP-Ixl"/>
                 <outlet property="tableView" destination="pWd-qA-8p6" id="ofz-B8-wzt"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -36,6 +38,14 @@
                         <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                     </collectionViewFlowLayout>
                 </collectionView>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="rwR-km-bZn">
+                    <rect key="frame" x="186" y="446" width="20" height="20"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </activityIndicatorView>
+                <pageControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="j61-cM-ygt">
+                    <rect key="frame" x="29" y="257" width="334" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                </pageControl>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
