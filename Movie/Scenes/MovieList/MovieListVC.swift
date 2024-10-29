@@ -15,23 +15,20 @@ class MovieListVC: UIViewController {
     @IBOutlet weak var sliderCollectionView: UICollectionView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
     @IBOutlet weak var pageControl: UIPageControl!
-    
-    
-    private var movieList: [MoviePresentation] = []
+        
+        private var movieList: [MoviePresentation] = []
         let service: MoviesServiceProtocol = MoviesService()
         var viewModel: MovieListViewModelProtocol!
         private var nowPlayingMovies: [MoviePresentation] = []
         private let refreshControl = UIRefreshControl()
         var currentPage = 1
-        
+
         override func viewDidLoad() {
             super.viewDidLoad()
             
             viewModel = MovieListViewModel(service: service)
             viewModel.delegate = self
             
-            viewModel.load()
-            viewModel.loadNowPlayingMovies()
             setupUI()
             setupSliderCollectionViewLayout()
             sliderCollectionView.delegate = self
@@ -61,13 +58,13 @@ class MovieListVC: UIViewController {
             view.addSubview(tableView)
             tableView.dataSource = self
             tableView.delegate = self
-            tableView.frame = view.bounds
-            
-            let screenHeight = UIScreen.main.bounds.height
-            tableView.frame = CGRect(x: 0, y: sliderCollectionView.frame.maxY, width: view.bounds.width, height: screenHeight)
+            tableView.frame = CGRect(x: 0, y: sliderCollectionView.frame.maxY, width: view.bounds.width, height: UIScreen.main.bounds.height - sliderCollectionView.frame.maxY)
             
             pageControl.numberOfPages = nowPlayingMovies.count
             pageControl.currentPage = 0
+            
+            viewModel.load()
+            viewModel.loadNowPlayingMovies()
         }
         
         private func setupRefreshControl() {
@@ -77,42 +74,44 @@ class MovieListVC: UIViewController {
         
         @objc private func refreshData() {
             currentPage = 1
-            viewModel.load() // Upcomings filmlerini yenile
-            viewModel.loadNowPlayingMovies() // Now playing filmlerini yenile
-            tableView.reloadData()
-            sliderCollectionView.reloadData()
+            viewModel.load()
+            viewModel.loadNowPlayingMovies()
             refreshControl.endRefreshing()
         }
-
     }
 
-
-
-extension MovieListVC: MovieListViewModelDelegate {
-    func handleViewModelOutput(_ output: MovieListViewModelOutput) {
-        print("handleViewModelOutput çağrıldı.")
-        
-        switch output {
-        case .updateTitle(let title):
-            self.title = title
-        case .setLoading(let isLoading):
-            UIApplication.shared.isNetworkActivityIndicatorVisible = isLoading
-        case .showMovieList(let movieList):
-            self.movieList.append(contentsOf: movieList) // Yeni filmleri mevcut listeye ekle
-            print("Film listesi alındı, toplam sayısı: \(self.movieList.count)")
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
+    extension MovieListVC: MovieListViewModelDelegate {
+        // MovieListVC.swift - Delegate Yönteminde
+        func navigate(to route: MovieListViewRoute) {
+            switch route {
+            case .detail(let viewModel):
+                let detailVC = MovieDetailVC(nibName: "MovieDetailVC", bundle: Bundle.main)
+                detailVC.viewModel = viewModel  // viewModel'ı detay ekranına aktar
+                self.navigationController?.pushViewController(detailVC, animated: true)
             }
-        case .showNowPlayingMovieList(let nowPlayingMovies):
-            self.nowPlayingMovies = nowPlayingMovies
-            print("Şu anda gösterimde olan filmler alındı, sayısı: \(nowPlayingMovies.count)")
-            DispatchQueue.main.async {
-                self.sliderCollectionView.reloadData()
-                self.pageControl.numberOfPages = self.nowPlayingMovies.count
+        }
+        
+        func handleViewModelOutput(_ output: MovieListViewModelOutput) {
+            switch output {
+            case .updateTitle(let title):
+                self.title = title
+            case .setLoading(let isLoading):
+                UIApplication.shared.isNetworkActivityIndicatorVisible = isLoading
+                isLoading ? activity.startAnimating() : activity.stopAnimating()
+            case .showMovieList(let movieList):
+                self.movieList = movieList
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            case .showNowPlayingMovieList(let nowPlayingMovies):
+                self.nowPlayingMovies = nowPlayingMovies
+                DispatchQueue.main.async {
+                    self.sliderCollectionView.reloadData()
+                    self.pageControl.numberOfPages = self.nowPlayingMovies.count
+                }
             }
         }
     }
-}
 
     extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -136,17 +135,14 @@ extension MovieListVC: MovieListViewModelDelegate {
             let height = scrollView.frame.size.height
             
             if scrollView == tableView && offsetY > contentHeight - height - 100 {
-               
+                currentPage += 1
+                viewModel.load()
             }
         }
         
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            let selectedMovie = movieList[indexPath.row]
-            let vc = MovieDetailVC(nibName: "MovieDetailVC", bundle: Bundle.main)
             viewModel.selectMovie(at: indexPath.row)
             tableView.deselectRow(at: indexPath, animated: false)
-            vc.movie = selectedMovie
-            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 
@@ -154,7 +150,7 @@ extension MovieListVC: MovieListViewModelDelegate {
         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
             return nowPlayingMovies.count
         }
-
+        
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MovieListCollectionCell", for: indexPath) as? MovieListCollectionCell else {
                 fatalError("Hata: MovieListCollectionCell")
@@ -163,11 +159,11 @@ extension MovieListVC: MovieListViewModelDelegate {
             cell.prepareCell(with: movie)
             return cell
         }
-
+        
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         }
-
+        
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
             return 0
         }

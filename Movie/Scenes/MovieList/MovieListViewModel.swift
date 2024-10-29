@@ -8,18 +8,18 @@
 import Foundation
 import MovieAPI
 
-
+// MovieListViewModel.swift
 final class MovieListViewModel: MovieListViewModelProtocol {
     weak var delegate: MovieListViewModelDelegate?
     private let service: MoviesServiceProtocol
-    private var movies: [Movie] = []
-    private var nowPlayingMovies: [Movie] = []
-    private var currentPage = 1
+    private var movies: [Movie] = [] // Upcoming movies
+    private var nowPlayingMovies: [Movie] = [] // Now playing movies
 
     init(service: MoviesServiceProtocol) {
         self.service = service
     }
 
+    // Upcoming filmleri yükler
     func load() {
         notify(.setLoading(true))
         
@@ -29,21 +29,18 @@ final class MovieListViewModel: MovieListViewModelProtocol {
             
             switch result {
             case .success(let response):
-                let movies = response.results
-                self.movies = movies // movies dizisini burada dolduruyoruz
-                let presentations = movies.map { MoviePresentation(movie: $0) }
+                self.movies = response.results // Sadece upcoming filmler burada güncellenir
+                let presentations = self.movies.map { MoviePresentation(movie: $0) }
                 
-                print("Gösterilecek filmler: \(presentations.count)")
+                print("Güncellenmiş upcoming film sayısı: \(presentations.count)")
                 self.notify(.showMovieList(presentations))
-                
-                // Koleksiyon görünümü için de filmleri güncelle
-                self.delegate?.handleViewModelOutput(.showMovieList(presentations))
             case .failure(let error):
                 print("API Fetch Hatası: \(error.localizedDescription)")
             }
         }
     }
     
+    // Now playing filmleri yükler
     func loadNowPlayingMovies() {
         notify(.setLoading(true))
 
@@ -53,11 +50,10 @@ final class MovieListViewModel: MovieListViewModelProtocol {
 
             switch result {
             case .success(let response):
-                self.nowPlayingMovies = response.results
-                self.movies = response.results // movies dizisini burada güncelliyoruz
+                self.nowPlayingMovies = response.results // Sadece now playing filmler burada güncellenir
                 let presentations = self.nowPlayingMovies.map { MoviePresentation(movie: $0) }
 
-                print("Gösterimde olan filmler: \(presentations.count)")
+                print("Güncellenmiş now playing film sayısı: \(presentations.count)")
                 self.notify(.showNowPlayingMovieList(presentations))
             case .failure(let error):
                 print("API Fetch Hatası: \(error.localizedDescription)")
@@ -66,11 +62,14 @@ final class MovieListViewModel: MovieListViewModelProtocol {
     }
 
     func selectMovie(at index: Int) {
+        guard index >= 0 && index < movies.count else {
+            print("Geçersiz film indeksi.")
+            return
+        }
         let movie = movies[index]
-        // Seçimi işleme al
+        let viewModel = MovieDetailViewModel(service: service, movie: movie)
+        delegate?.navigate(to: .detail(viewModel))
     }
-
-
     
     private func notify(_ output: MovieListViewModelOutput) {
         delegate?.handleViewModelOutput(output)

@@ -9,6 +9,7 @@ import Foundation
 
 protocol MovieListViewModelDelegate: AnyObject {
     func handleViewModelOutput(_ output: MovieListViewModelOutput)
+    func navigate(to route: MovieListViewRoute)
 }
 
 enum MovieListViewModelOutput {
@@ -18,9 +19,13 @@ enum MovieListViewModelOutput {
     case showNowPlayingMovieList([MoviePresentation])
 }
 
+enum MovieListViewRoute {
+    case detail(MovieDetailViewModel)
+}
+
 protocol MovieListViewModelProtocol {
     var delegate: MovieListViewModelDelegate? { get set }
     func load()
-    func loadNowPlayingMovies() // Bu satırı ekleyin
+    func loadNowPlayingMovies()
     func selectMovie(at index: Int)
 }
