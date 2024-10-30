@@ -85,6 +85,7 @@ class MovieListVC: UIViewController {
         activity.startAnimating()
         
         self.movieList = []
+        self.nowPlayingMovies = []
         viewModel.loadNowPlayingMovies()
         viewModel.loadUpcomingMovies(page: currentPage)
         print("Veriler yenileniyor: Sayfa \(currentPage)")
@@ -112,11 +113,11 @@ extension MovieListVC: MovieListViewModelDelegate {
         case .showMovieList(let newMovies, let totalPages):
             self.totalPages = totalPages
             
-            
             if currentPage == 1 {
                 self.movieList = newMovies
             } else {
                
+                guard !newMovies.isEmpty else { return }
                 self.movieList.append(contentsOf: newMovies)
             }
             
