@@ -8,7 +8,6 @@
 import Foundation
 import MovieAPI
 
-
 struct MoviePresentation: Equatable {
     let id: Int
     let title: String

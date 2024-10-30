@@ -59,6 +59,8 @@ class MovieListVC: UIViewController {
         }
     }
     
+    
+    
     private func setupUI() {
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -78,13 +80,14 @@ class MovieListVC: UIViewController {
     }
     
     @objc private func refreshData() {
-        currentPage = 1 
+        currentPage = 1
         isLoadingData = true
         activity.startAnimating()
         
-        
+        self.movieList = []
         viewModel.loadNowPlayingMovies()
         viewModel.loadUpcomingMovies(page: currentPage)
+        print("Veriler yenileniyor: Sayfa \(currentPage)")
     }
 }
 
@@ -97,26 +100,29 @@ extension MovieListVC: MovieListViewModelDelegate {
             self.navigationController?.pushViewController(detailVC, animated: true)
         }
     }
+    
     func handleViewModelOutput(_ output: MovieListViewModelOutput) {
         switch output {
         case .updateTitle(let title):
             self.title = title
         case .setLoading(let isLoading):
-            UIApplication.shared.isNetworkActivityIndicatorVisible = isLoading
             isLoading ? activity.startAnimating() : activity.stopAnimating()
-        case .showMovieList(let movieList, let totalPages):
-            // Aşağı çekme yenilemesi için movieList'in güncellenmesi
-            if currentPage == 1 {
-                self.movieList = movieList
-            } else {
-                self.movieList += movieList
-            }
+            isLoadingData = isLoading  
+            
+        case .showMovieList(let newMovies, let totalPages):
             self.totalPages = totalPages
+            
+            
+            if currentPage == 1 {
+                self.movieList = newMovies
+            } else {
+               
+                self.movieList.append(contentsOf: newMovies)
+            }
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
                 self.isLoadingData = false
-                self.activity.stopAnimating()
                 self.refreshControl.endRefreshing()
             }
             
@@ -152,14 +158,26 @@ extension MovieListVC: MovieListViewModelDelegate {
             let contentHeight = scrollView.contentSize.height
             let height = scrollView.frame.size.height
 
+           
             if scrollView == tableView && offsetY > contentHeight - height - 100 {
                 if !isLoadingData && currentPage < totalPages {
                     isLoadingData = true
                     currentPage += 1
+                    print("Aşağı kaydırıldı, yeni sayfa: \(currentPage)")
+                    viewModel.loadUpcomingMovies(page: currentPage)
+                }
+            }
+           
+            if scrollView == tableView && offsetY < 100 {
+                if !isLoadingData && currentPage > 1 {
+                    isLoadingData = true
+                    currentPage -= 1
+                    print("Yukarı kaydırıldı, önceki sayfa: \(currentPage)")
                     viewModel.loadUpcomingMovies(page: currentPage)
                 }
             }
         }
+
 
         
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
