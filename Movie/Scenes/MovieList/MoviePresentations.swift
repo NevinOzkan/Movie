@@ -8,7 +8,7 @@
 import Foundation
 import MovieAPI
 
-// MoviePresentation yapı tanımı
+
 struct MoviePresentation: Equatable {
     let id: Int
     let title: String
@@ -17,7 +17,7 @@ struct MoviePresentation: Equatable {
     let releaseDate: String?
     let posterPath: String?
     
-    // Movie nesnesini kabul eden bir initializer ekleyin
+   
     init(movie: Movie) {
         self.id = movie.id ?? 00
         self.title = movie.title ?? "Title not available"

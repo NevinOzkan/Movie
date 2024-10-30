@@ -28,10 +28,10 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
             return
         }
         
-        // MovieDetailPresentation oluştur
+        
         let presentation = MovieDetailPresentation(movie: movie)
         
-        // Delegate aracılığıyla UI'ya gönder
+      
         delegate?.showDetail(presentation)
     }
 }

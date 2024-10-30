@@ -17,7 +17,7 @@ class MovieListCollectionCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+       
     }
     func prepareCell(with model: MoviePresentation) {
             movieTitle.text = model.title

@@ -32,7 +32,7 @@ class MovieDetailVC: UIViewController {
                 print("ViewModel loadMovieDetail'de nil!")
                 return
             }
-            viewModel.load() // Veriyi ViewModel üzerinden yükle
+            viewModel.load() 
         }
 
         private func setupUI() {
@@ -40,7 +40,7 @@ class MovieDetailVC: UIViewController {
                 print("ViewModel nil!")
                 return
             }
-            viewModel.delegate = self // Delegasyonu ayarla
+            viewModel.delegate = self
         }
     }
 

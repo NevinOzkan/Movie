@@ -8,52 +8,56 @@
 import Foundation
 import MovieAPI
 
-// MovieListViewModel.swift
 final class MovieListViewModel: MovieListViewModelProtocol {
+    
     weak var delegate: MovieListViewModelDelegate?
     private let service: MoviesServiceProtocol
-    private var movies: [Movie] = [] // Upcoming movies
-    private var nowPlayingMovies: [Movie] = [] // Now playing movies
+    private var movies: [Movie] = []
+    private var nowPlayingMovies: [Movie] = []
 
     init(service: MoviesServiceProtocol) {
         self.service = service
     }
 
-    // Upcoming filmleri yükler
-    func load() {
+    func loadUpcomingMovies(page: Int) {
         notify(.setLoading(true))
         
-        service.fetchMovies { [weak self] (result) in
+        service.fetchUpcomingMovies { [weak self] result in
             guard let self = self else { return }
             self.notify(.setLoading(false))
             
             switch result {
             case .success(let response):
-                self.movies = response.results // Sadece upcoming filmler burada güncellenir
+                self.movies = response.results
                 let presentations = self.movies.map { MoviePresentation(movie: $0) }
                 
+                
                 print("Güncellenmiş upcoming film sayısı: \(presentations.count)")
-                self.notify(.showMovieList(presentations))
+                print("Upcoming Movies:", self.movies)
+                
+                self.notify(.showMovieList(presentations, page))
             case .failure(let error):
                 print("API Fetch Hatası: \(error.localizedDescription)")
             }
         }
     }
     
-    // Now playing filmleri yükler
     func loadNowPlayingMovies() {
         notify(.setLoading(true))
 
-        service.fetchNowPlayingMovies { [weak self] (result) in
+        service.fetchNowPlayingMovies { [weak self] result in
             guard let self = self else { return }
             self.notify(.setLoading(false))
 
             switch result {
             case .success(let response):
-                self.nowPlayingMovies = response.results // Sadece now playing filmler burada güncellenir
+                self.nowPlayingMovies = response.results
                 let presentations = self.nowPlayingMovies.map { MoviePresentation(movie: $0) }
 
+               
                 print("Güncellenmiş now playing film sayısı: \(presentations.count)")
+                print("Now Playing Movies:", self.nowPlayingMovies)
+
                 self.notify(.showNowPlayingMovieList(presentations))
             case .failure(let error):
                 print("API Fetch Hatası: \(error.localizedDescription)")

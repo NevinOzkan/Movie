@@ -25,13 +25,13 @@ class MovieListCell: UITableViewCell {
     
     func prepareCell(with model: MoviePresentation) {
         titleLabel.text = model.title
-        overviewLabel.text = model.overview // "detail" yerine "overview"
+        overviewLabel.text = model.overview 
         
-        // releaseDate opsiyonel ise açıyoruz
+        
         if let releaseDate = model.releaseDate {
             dateLabel.text = DateFormatterHelper.formattedDate(from: releaseDate)
         } else {
-            dateLabel.text = "N/A" // veya uygun bir varsayılan değer
+            dateLabel.text = "N/A"
         }
         
         if let posterPath = model.posterPath,

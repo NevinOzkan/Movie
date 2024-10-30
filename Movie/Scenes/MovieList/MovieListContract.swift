@@ -15,7 +15,7 @@ protocol MovieListViewModelDelegate: AnyObject {
 enum MovieListViewModelOutput {
     case updateTitle(String)
     case setLoading(Bool)
-    case showMovieList([MoviePresentation])
+    case showMovieList([MoviePresentation], Int) 
     case showNowPlayingMovieList([MoviePresentation])
 }
 
@@ -25,7 +25,8 @@ enum MovieListViewRoute {
 
 protocol MovieListViewModelProtocol {
     var delegate: MovieListViewModelDelegate? { get set }
-    func load()
+    
+    func loadUpcomingMovies(page: Int)
     func loadNowPlayingMovies()
     func selectMovie(at index: Int)
 }
