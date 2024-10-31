@@ -29,7 +29,7 @@ class MovieListVC: UIViewController {
         super.viewDidLoad()
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-
+        
         
         viewModel = MovieListViewModel(service: service)
         viewModel.delegate = self
@@ -56,9 +56,9 @@ class MovieListVC: UIViewController {
     
     private func setupSliderCollectionViewLayout() {
         if let layout = sliderCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.scrollDirection = .horizontal // Yatay kaydırma yönü
-            layout.minimumLineSpacing = 0 // Hücreler arası boşluk sıfır
-            sliderCollectionView.isPagingEnabled = true // Sayfa kaydırma özelliği etkin
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 0
+            sliderCollectionView.isPagingEnabled = true 
         }
     }
     
@@ -68,16 +68,16 @@ class MovieListVC: UIViewController {
         view.addSubview(pageControl)
         tableView.dataSource = self
         tableView.delegate = self
-    
+        
         pageControl.numberOfPages = nowPlayingMovies.count
         pageControl.currentPage = 0
         
         viewModel.loadUpcomingMovies(page: 0)
         viewModel.loadNowPlayingMovies()
-            
-            pageControl.numberOfPages = nowPlayingMovies.count
-            pageControl.currentPage = 0
-        }
+        
+        pageControl.numberOfPages = nowPlayingMovies.count
+        pageControl.currentPage = 0
+    }
     
     private func setupRefreshControl() {
         tableView.refreshControl = refreshControl
@@ -85,20 +85,34 @@ class MovieListVC: UIViewController {
     }
     
     @objc private func refreshData() {
-           currentPage = 1
-           isLoadingData = true
-           activity.startAnimating()
+        // Yenileme için mevcut sayfayı sıfırlayın
         
-           self.upcomingMovies = []
-           self.nowPlayingMovies = []
+        currentPage = 1
+        isLoadingData = true
+        activity.startAnimating() // Yenileme başladığında aktivite göstergesini başlat
         
-           viewModel.loadNowPlayingMovies()
-           viewModel.loadUpcomingMovies(page: currentPage)
-           
-           refreshControl.endRefreshing()
-           print("Veriler yenileniyor: Sayfa \(currentPage)")
-       }
-   }
+        // Mevcut verileri temizleyerek yeni sonuçları alın
+        self.upcomingMovies = []
+        self.nowPlayingMovies = []
+        
+        // Şu anda gösterilen ve yaklaşan filmleri yükleyin
+        viewModel.loadNowPlayingMovies()
+        viewModel.loadUpcomingMovies(page: currentPage)
+        
+        // Aşağıda, veri yüklenmesi tamamlandığında aktivite göstergesini durdurmak için
+        DispatchQueue.global().async {
+            // Ağ isteği gecikmesini simüle et
+            sleep(2) // Ağ gecikmesini simüle edin (bunu üretimde kaldırın)
+            
+            DispatchQueue.main.async {
+                self.activity.stopAnimating() // Veri yüklemesi tamamlandığında aktivite göstergesini durdur
+                self.refreshControl.endRefreshing() // Yenilemeyi sonlandır
+            }
+        }
+        
+        print("Veriler yenileniyor: Sayfa \(currentPage)")
+    }
+}
 
 extension MovieListVC: MovieListViewModelDelegate {
     func navigate(to route: MovieListViewRoute) {
@@ -132,11 +146,12 @@ extension MovieListVC: MovieListViewModelDelegate {
             
             DispatchQueue.main.async {
                 self.tableView.reloadData()
+                self.sliderCollectionView.reloadData()
+                self.currentPage += 1
                 self.isLoadingData = false
                 self.refreshControl.endRefreshing()
             }
         
-            
         case .showNowPlayingMovieList(let nowPlayingMovies):
             self.nowPlayingMovies = nowPlayingMovies
             DispatchQueue.main.async {
@@ -174,11 +189,11 @@ extension MovieListVC: MovieListViewModelDelegate {
                         isLoadingData = true
                         currentPage += 1
                         viewModel.loadUpcomingMovies(page: currentPage)
-                        print("Yeni veriler yükleniyor: Sayfa \(currentPage)")
                     }
                 }
             }
         }
+
         
         
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

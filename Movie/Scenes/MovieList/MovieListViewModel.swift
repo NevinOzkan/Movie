@@ -30,10 +30,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
             case .success(let response):
                 self.movies = response.results
                 let presentations = self.movies.map { MoviePresentation(movie: $0) }
-                
-                
-                print("Güncellenmiş upcoming film sayısı: \(presentations.count)")
-                print("Upcoming Movies:", self.movies)
+               
                 
                 self.notify(.showMovieList(presentations, page))
             case .failure(let error):
@@ -55,8 +52,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
                 let presentations = self.nowPlayingMovies.map { MoviePresentation(movie: $0) }
 
                
-                print("Güncellenmiş now playing film sayısı: \(presentations.count)")
-                print("Now Playing Movies:", self.nowPlayingMovies)
+              
 
                 self.notify(.showNowPlayingMovieList(presentations))
             case .failure(let error):
