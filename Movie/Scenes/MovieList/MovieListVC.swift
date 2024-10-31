@@ -28,6 +28,9 @@ class MovieListVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+
+        
         viewModel = MovieListViewModel(service: service)
         viewModel.delegate = self
         
@@ -40,6 +43,7 @@ class MovieListVC: UIViewController {
         
         viewModel.loadNowPlayingMovies()
         viewModel.loadUpcomingMovies(page: 1)
+        
     }
     
     private func registerCells() {
@@ -52,27 +56,28 @@ class MovieListVC: UIViewController {
     
     private func setupSliderCollectionViewLayout() {
         if let layout = sliderCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            layout.scrollDirection = .horizontal
-            layout.minimumLineSpacing = 0
-            layout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 250)
-            sliderCollectionView.isPagingEnabled = true
+            layout.scrollDirection = .horizontal // Yatay kaydırma yönü
+            layout.minimumLineSpacing = 0 // Hücreler arası boşluk sıfır
+            sliderCollectionView.isPagingEnabled = true // Sayfa kaydırma özelliği etkin
         }
     }
     
-    
-    
     private func setupUI() {
         view.addSubview(tableView)
+        view.addSubview(sliderCollectionView)
+        view.addSubview(pageControl)
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.frame = CGRect(x: 0, y: sliderCollectionView.frame.maxY, width: view.bounds.width, height: UIScreen.main.bounds.height - sliderCollectionView.frame.maxY)
-        
+    
         pageControl.numberOfPages = nowPlayingMovies.count
         pageControl.currentPage = 0
         
         viewModel.loadUpcomingMovies(page: 0)
         viewModel.loadNowPlayingMovies()
-    }
+            
+            pageControl.numberOfPages = nowPlayingMovies.count
+            pageControl.currentPage = 0
+        }
     
     private func setupRefreshControl() {
         tableView.refreshControl = refreshControl
@@ -80,18 +85,16 @@ class MovieListVC: UIViewController {
     }
     
     @objc private func refreshData() {
-           // Verileri ilk sayfadan yeniden yükler
            currentPage = 1
            isLoadingData = true
            activity.startAnimating()
-           
-           // Mevcut verileri temizleyip baştan yükleme yapıyoruz
+        
            self.upcomingMovies = []
            self.nowPlayingMovies = []
+        
            viewModel.loadNowPlayingMovies()
            viewModel.loadUpcomingMovies(page: currentPage)
            
-           // Yenilemeyi durdurma
            refreshControl.endRefreshing()
            print("Veriler yenileniyor: Sayfa \(currentPage)")
        }
@@ -117,7 +120,6 @@ extension MovieListVC: MovieListViewModelDelegate {
             
         case .showMovieList(let newMovies, let totalPages):
             self.totalPages = totalPages
-            
             if currentPage == 1 {
                 self.upcomingMovies = newMovies
             } else {
@@ -133,6 +135,7 @@ extension MovieListVC: MovieListViewModelDelegate {
                 self.isLoadingData = false
                 self.refreshControl.endRefreshing()
             }
+        
             
         case .showNowPlayingMovieList(let nowPlayingMovies):
             self.nowPlayingMovies = nowPlayingMovies
@@ -144,7 +147,6 @@ extension MovieListVC: MovieListViewModelDelegate {
         }
     }
 }
-
     extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             return upcomingMovies.count
@@ -161,17 +163,19 @@ extension MovieListVC: MovieListViewModelDelegate {
             return 140
         }
         
-       
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             let offsetY = scrollView.contentOffset.y
             let contentHeight = scrollView.contentSize.height
             let height = scrollView.frame.size.height
-
-            if scrollView == tableView && offsetY > contentHeight - height - 100 {
-                if !isLoadingData && currentPage < totalPages {
-                    isLoadingData = true
-                    currentPage += 1
-                    viewModel.loadUpcomingMovies(page: currentPage)
+            
+            if scrollView == tableView {
+                if offsetY > contentHeight - height - 100 {
+                    if !isLoadingData && currentPage < totalPages {
+                        isLoadingData = true
+                        currentPage += 1
+                        viewModel.loadUpcomingMovies(page: currentPage)
+                        print("Yeni veriler yükleniyor: Sayfa \(currentPage)")
+                    }
                 }
             }
         }

@@ -27,10 +27,12 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
-                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Huq-KU-sMP">
-                    <rect key="frame" x="0.0" y="0.0" width="393" height="291"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Huq-KU-sMP">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="280"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="280" id="Hvq-JT-Lwn"/>
+                    </constraints>
                     <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="nms-hm-H30">
                         <size key="itemSize" width="128" height="128"/>
                         <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -49,6 +51,11 @@
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="Huq-KU-sMP" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="F3z-QK-flr"/>
+                <constraint firstItem="Huq-KU-sMP" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="ipE-QS-Evg"/>
+                <constraint firstItem="Huq-KU-sMP" firstAttribute="trailing" secondItem="fnl-2z-Ty3" secondAttribute="trailing" id="ksM-fo-MwY"/>
+            </constraints>
             <point key="canvasLocation" x="139.69465648854961" y="19.718309859154932"/>
         </view>
     </objects>
