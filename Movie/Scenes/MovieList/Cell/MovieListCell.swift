@@ -25,7 +25,7 @@ class MovieListCell: UITableViewCell {
     
     func prepareCell(with model: MoviePresentation) {
         titleLabel.text = model.title
-        overviewLabel.text = model.overview 
+        overviewLabel.text = model.overview
         
         
         if let releaseDate = model.releaseDate {
@@ -37,8 +37,6 @@ class MovieListCell: UITableViewCell {
         if let posterPath = model.posterPath,
            let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + posterPath) {
             movieImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
-        } else {
-            movieImageView.image = UIImage(named: "placeholder")
         }
     }
 }

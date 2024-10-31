@@ -17,11 +17,12 @@ class MovieListCollectionCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-       
+        ImageView.image = nil
     }
     func prepareCell(with model: MoviePresentation) {
             movieTitle.text = model.title
             movieOverview.text = model.overview
+        ImageView.image = nil
             
             if let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + model.posterPath!) {
                 ImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))

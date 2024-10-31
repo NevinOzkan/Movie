@@ -58,7 +58,7 @@ class MovieListVC: UIViewController {
         if let layout = sliderCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal
             layout.minimumLineSpacing = 0
-            sliderCollectionView.isPagingEnabled = true 
+            sliderCollectionView.isPagingEnabled = true
         }
     }
     
@@ -85,28 +85,27 @@ class MovieListVC: UIViewController {
     }
     
     @objc private func refreshData() {
-        // Yenileme için mevcut sayfayı sıfırlayın
-        
         currentPage = 1
         isLoadingData = true
-        activity.startAnimating() // Yenileme başladığında aktivite göstergesini başlat
+        activity.startAnimating()
         
-        // Mevcut verileri temizleyerek yeni sonuçları alın
-        self.upcomingMovies = []
-        self.nowPlayingMovies = []
+        // Önceki filmleri temizle ve yeni verileri yükle
+        self.upcomingMovies.removeAll()
+        self.nowPlayingMovies.removeAll()
         
-        // Şu anda gösterilen ve yaklaşan filmleri yükleyin
         viewModel.loadNowPlayingMovies()
         viewModel.loadUpcomingMovies(page: currentPage)
         
-        // Aşağıda, veri yüklenmesi tamamlandığında aktivite göstergesini durdurmak için
         DispatchQueue.global().async {
-            // Ağ isteği gecikmesini simüle et
-            sleep(2) // Ağ gecikmesini simüle edin (bunu üretimde kaldırın)
+            sleep(2) // Ağ gecikmesini simüle et
             
             DispatchQueue.main.async {
-                self.activity.stopAnimating() // Veri yüklemesi tamamlandığında aktivite göstergesini durdur
-                self.refreshControl.endRefreshing() // Yenilemeyi sonlandır
+                self.activity.stopAnimating()
+                self.refreshControl.endRefreshing()
+                // Yalnızca upcomingMovies dizisinde eleman varsa UI'yi güncelle
+                if !self.upcomingMovies.isEmpty {
+                    self.tableView.reloadData()
+                }
             }
         }
         
@@ -162,45 +161,42 @@ extension MovieListVC: MovieListViewModelDelegate {
         }
     }
 }
-    extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return upcomingMovies.count
-        }
-        
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "MovieListCell", for: indexPath) as! MovieListCell
-            let movie = upcomingMovies[indexPath.row]
-            cell.prepareCell(with: movie)
-            return cell
-        }
-        
-        func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 140
-        }
-        
-        func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            let offsetY = scrollView.contentOffset.y
-            let contentHeight = scrollView.contentSize.height
-            let height = scrollView.frame.size.height
-            
-            if scrollView == tableView {
-                if offsetY > contentHeight - height - 100 {
-                    if !isLoadingData && currentPage < totalPages {
-                        isLoadingData = true
-                        currentPage += 1
-                        viewModel.loadUpcomingMovies(page: currentPage)
-                    }
-                }
-            }
-        }
 
+extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return upcomingMovies.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MovieListCell", for: indexPath) as! MovieListCell
+        let movie = upcomingMovies[indexPath.row]
+        cell.prepareCell(with: movie)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 140
+    }
+    
+    //Tableview kaydırma
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
         
-        
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            viewModel.selectMovie(at: indexPath.row)
-            tableView.deselectRow(at: indexPath, animated: false)
+        if scrollView == tableView && offsetY > contentHeight - height {
+            setupUI()
         }
     }
+
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        viewModel.selectMovie(at: indexPath.row)
+        tableView.deselectRow(at: indexPath, animated: true) // Seçimi kaldır
+    }
+
+}
+
 
     extension MovieListVC: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
