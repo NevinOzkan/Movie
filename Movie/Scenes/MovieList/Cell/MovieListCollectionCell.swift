@@ -9,7 +9,7 @@ import UIKit
 import MovieAPI
 
 class MovieListCollectionCell: UICollectionViewCell {
-
+    
     
     @IBOutlet weak var ImageView: UIImageView!
     @IBOutlet weak var movieTitle: UILabel!
@@ -19,13 +19,14 @@ class MovieListCollectionCell: UICollectionViewCell {
         super.awakeFromNib()
         ImageView.image = nil
     }
+    
     func prepareCell(with model: MoviePresentation) {
-            movieTitle.text = model.title
-            movieOverview.text = model.overview
-        ImageView.image = nil
-            
-            if let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + model.posterPath!) {
-                ImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
-            }
+        movieTitle.text = model.title
+        movieOverview.text = model.overview
+        ImageView.image = nil // Önce eski görseli temizle
+        
+        if let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + model.posterPath!) {
+            ImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
         }
     }
+}

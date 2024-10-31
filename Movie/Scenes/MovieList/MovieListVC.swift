@@ -150,7 +150,7 @@ extension MovieListVC: MovieListViewModelDelegate {
                 self.isLoadingData = false
                 self.refreshControl.endRefreshing()
             }
-        
+            
         case .showNowPlayingMovieList(let nowPlayingMovies):
             self.nowPlayingMovies = nowPlayingMovies
             DispatchQueue.main.async {
@@ -192,7 +192,7 @@ extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.selectMovie(at: indexPath.row)
-        tableView.deselectRow(at: indexPath, animated: true) // Seçimi kaldır
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 
 }
