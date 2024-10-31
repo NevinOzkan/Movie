@@ -13,16 +13,16 @@ final class MockMoviesService: MoviesServiceProtocol {
 
     func fetchUpcomingMovies(completion: @escaping (MovieAPI.Result<MovieAPI.MoviesResponse>) -> Void) {
         let moviesResponse = MoviesResponse(results: movies)
-        completion(.success(moviesResponse)) // Mock upcoming movies data
+        completion(.success(moviesResponse))
     }
 
     func fetchNowPlayingMovies(completion: @escaping (MovieAPI.Result<MovieAPI.MoviesResponse>) -> Void) {
         let moviesResponse = MoviesResponse(results: movies)
-        completion(.success(moviesResponse)) // Mock now playing movies data
+        completion(.success(moviesResponse))
     }
 
     func fetchMovies(completion: @escaping (Result<MoviesResponse>) -> Void) {
         let moviesResponse = MoviesResponse(results: movies)
-        completion(.success(moviesResponse)) // Mock current movies data
+        completion(.success(moviesResponse))
     }
 }

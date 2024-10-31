@@ -16,10 +16,10 @@ class MovieListVC: UIViewController {
     @IBOutlet weak var activity: UIActivityIndicatorView!
     @IBOutlet weak var pageControl: UIPageControl!
     
-    private var movieList: [MoviePresentation] = []
+    private var upcomingMovies: [MoviePresentation] = []
+    private var nowPlayingMovies: [MoviePresentation] = []
     let service: MoviesServiceProtocol = MoviesService()
     var viewModel: MovieListViewModelProtocol!
-    private var nowPlayingMovies: [MoviePresentation] = []
     private let refreshControl = UIRefreshControl()
     private var isLoadingData = false
     var currentPage = 1
@@ -80,17 +80,22 @@ class MovieListVC: UIViewController {
     }
     
     @objc private func refreshData() {
-        currentPage = 1
-        isLoadingData = true
-        activity.startAnimating()
-        
-        self.movieList = []
-        self.nowPlayingMovies = []
-        viewModel.loadNowPlayingMovies()
-        viewModel.loadUpcomingMovies(page: currentPage)
-        print("Veriler yenileniyor: Sayfa \(currentPage)")
-    }
-}
+           // Verileri ilk sayfadan yeniden yükler
+           currentPage = 1
+           isLoadingData = true
+           activity.startAnimating()
+           
+           // Mevcut verileri temizleyip baştan yükleme yapıyoruz
+           self.upcomingMovies = []
+           self.nowPlayingMovies = []
+           viewModel.loadNowPlayingMovies()
+           viewModel.loadUpcomingMovies(page: currentPage)
+           
+           // Yenilemeyi durdurma
+           refreshControl.endRefreshing()
+           print("Veriler yenileniyor: Sayfa \(currentPage)")
+       }
+   }
 
 extension MovieListVC: MovieListViewModelDelegate {
     func navigate(to route: MovieListViewRoute) {
@@ -108,17 +113,19 @@ extension MovieListVC: MovieListViewModelDelegate {
             self.title = title
         case .setLoading(let isLoading):
             isLoading ? activity.startAnimating() : activity.stopAnimating()
-            isLoadingData = isLoading  
+            isLoadingData = isLoading
             
         case .showMovieList(let newMovies, let totalPages):
             self.totalPages = totalPages
             
             if currentPage == 1 {
-                self.movieList = newMovies
+                self.upcomingMovies = newMovies
             } else {
-               
-                guard !newMovies.isEmpty else { return }
-                self.movieList.append(contentsOf: newMovies)
+                guard !newMovies.isEmpty else {
+                    isLoadingData = false
+                    return
+                }
+                self.upcomingMovies.append(contentsOf: newMovies)
             }
             
             DispatchQueue.main.async {
@@ -140,12 +147,12 @@ extension MovieListVC: MovieListViewModelDelegate {
 
     extension MovieListVC: UITableViewDataSource, UITableViewDelegate {
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return movieList.count
+            return upcomingMovies.count
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "MovieListCell", for: indexPath) as! MovieListCell
-            let movie = movieList[indexPath.row]
+            let movie = upcomingMovies[indexPath.row]
             cell.prepareCell(with: movie)
             return cell
         }
@@ -154,32 +161,21 @@ extension MovieListVC: MovieListViewModelDelegate {
             return 140
         }
         
+       
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             let offsetY = scrollView.contentOffset.y
             let contentHeight = scrollView.contentSize.height
             let height = scrollView.frame.size.height
 
-           
             if scrollView == tableView && offsetY > contentHeight - height - 100 {
                 if !isLoadingData && currentPage < totalPages {
                     isLoadingData = true
                     currentPage += 1
-                    print("Aşağı kaydırıldı, yeni sayfa: \(currentPage)")
-                    viewModel.loadUpcomingMovies(page: currentPage)
-                }
-            }
-           
-            if scrollView == tableView && offsetY < 100 {
-                if !isLoadingData && currentPage > 1 {
-                    isLoadingData = true
-                    currentPage -= 1
-                    print("Yukarı kaydırıldı, önceki sayfa: \(currentPage)")
                     viewModel.loadUpcomingMovies(page: currentPage)
                 }
             }
         }
-
-
+        
         
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             viewModel.selectMovie(at: indexPath.row)
