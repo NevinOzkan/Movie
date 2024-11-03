@@ -8,7 +8,7 @@
 import XCTest
 @testable import Movie
 
-
+// Mock servis kullanarak gerçek API çağrılarına bağımlılığı ortadan kaldırır ve testlerin daha hızlı ve güvenilir bir şekilde çalışmasını sağlar.
 final class MovieTests: XCTestCase {
     
     private var view: MockView!

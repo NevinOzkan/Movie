@@ -8,6 +8,7 @@
 import Foundation
 import MovieAPI
 
+//gerçek API çağrıları yerine geçen sahte bir servistir.
 final class MockMoviesService: MoviesServiceProtocol {
     var movies: [Movie] = []
 

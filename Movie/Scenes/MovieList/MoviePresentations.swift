@@ -8,6 +8,7 @@
 import Foundation
 import MovieAPI
 
+// Film bilgilerini tutar ve bu bilgileri uygun şekilde işler.
 struct MoviePresentation: Equatable {
     let id: Int
     let title: String

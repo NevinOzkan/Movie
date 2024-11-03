@@ -8,8 +8,6 @@
 import Foundation
 import MovieAPI
 
-import Foundation
-import MovieAPI
 
 final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     
@@ -35,3 +33,8 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
         delegate?.showDetail(presentation)
     }
 }
+
+//MovieDetailViewModel, film detaylarının yüklenmesini ve UI'ya iletilmesini yöneten bir yapıdır. Protokol tabanlı bir servis kullanarak, veri çekme işlemleri için esneklik sağlar. Ayrıca, delegate kullanarak UI katmanıyla etkileşime geçer. Film verilerini aldıktan sonra, bu verileri bir MovieDetailPresentation nesnesine dönüştürerek, UI'nin kullanabileceği bir formatta sunar. Bu yapı, MVVM mimarisinin bir parçasıdır ve uygulamanın veri ve sunum katmanları arasında iyi bir ayrım sağlar.//
+
+
+

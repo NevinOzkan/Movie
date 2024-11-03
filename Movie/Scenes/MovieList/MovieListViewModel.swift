@@ -21,6 +21,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
         self.service = service
     }
 
+    //Yaklaşan filmleri yükler.
     func loadUpcomingMovies(page: Int) {
         
         SDImageCache.shared.clearMemory()
@@ -52,7 +53,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
         }
     }
 
-
+//Şu anda gösterimde olan filmleri yükler.
     
     func loadNowPlayingMovies() {
         SDImageCache.shared.clearMemory()
@@ -84,6 +85,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
         }
     }
     
+    // Kullanıcının seçtiği filme gitmek için kullanılır.
     func selectMovie(at index: Int) {
         guard index >= 0 && index < movies.count else {
             print("Geçersiz film indeksi.")
@@ -94,6 +96,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
         delegate?.navigate(to: .detail(viewModel))
     }
     
+    //Delegate aracılığıyla View’a çıktı bildirmek için kullanılır.
     private func notify(_ output: MovieListViewModelOutput) {
         DispatchQueue.main.async {
             self.delegate?.handleViewModelOutput(output)
