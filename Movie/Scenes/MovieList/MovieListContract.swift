@@ -15,7 +15,7 @@ protocol MovieListViewModelDelegate: AnyObject {
 enum MovieListViewModelOutput {
     case updateTitle(String)
     case setLoading(Bool)
-    case showMovieList([MoviePresentation], Int) 
+    case showUpcomingMovieList([MoviePresentation], Int) 
     case showNowPlayingMovieList([MoviePresentation])
 }
 

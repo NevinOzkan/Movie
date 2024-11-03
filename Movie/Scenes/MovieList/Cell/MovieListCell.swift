@@ -7,6 +7,7 @@
 
 import UIKit
 import MovieAPI
+import SDWebImage
 
 class MovieListCell: UITableViewCell {
     
@@ -24,19 +25,19 @@ class MovieListCell: UITableViewCell {
     }
     
     func prepareCell(with model: MoviePresentation) {
-        titleLabel.text = model.title
-        overviewLabel.text = model.overview
-        
-        
-        if let releaseDate = model.releaseDate {
-            dateLabel.text = DateFormatterHelper.formattedDate(from: releaseDate)
-        } else {
-            dateLabel.text = "N/A"
-        }
-        
-        if let posterPath = model.posterPath,
-           let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + posterPath) {
-            movieImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
+            titleLabel.text = model.title
+            overviewLabel.text = model.overview
+            
+            
+            if let releaseDate = model.releaseDate {
+                dateLabel.text = DateFormatterHelper.formattedDate(from: releaseDate)
+            } else {
+                dateLabel.text = "N/A"
+            }
+            
+            if let posterPath = model.posterPath,
+               let imageUrl = URL(string: "https://image.tmdb.org/t/p/w500" + posterPath) {
+                movieImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "placeholder"))
+            }
         }
     }
-}
