@@ -8,6 +8,7 @@
 import Foundation
 import MovieAPI
 
+// Gerçek veriler ve ağ çağrıları olmadan uygulamayı test etme ihtiyacı olduğunda, bu tür bir sahte (mock) servis oluşturuldu
 //gerçek API çağrıları yerine geçen sahte bir servistir.
 final class MockMoviesService: MoviesServiceProtocol {
     var movies: [Movie] = []

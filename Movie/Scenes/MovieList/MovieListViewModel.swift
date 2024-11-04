@@ -7,11 +7,11 @@
 
 import Foundation
 import MovieAPI
-import SDWebImage
+
 
 final class MovieListViewModel: MovieListViewModelProtocol {
     
-    weak var delegate: MovieListViewModelDelegate?
+    weak var delegate: MovieListViewModelDelegate? // ViewModel, View katmanıyla iletişim kurmasını sağlar.
     private let service: MoviesServiceProtocol
     private var movies: [Movie] = []
     private var nowPlayingMovies: [Movie] = []
@@ -23,9 +23,6 @@ final class MovieListViewModel: MovieListViewModelProtocol {
 
     //Yaklaşan filmleri yükler.
     func loadUpcomingMovies(page: Int) {
-        
-        SDImageCache.shared.clearMemory()
-        SDImageCache.shared.clearDisk(onCompletion: nil)
         
         notify(.setLoading(true))
         
@@ -56,9 +53,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
 //Şu anda gösterimde olan filmleri yükler.
     
     func loadNowPlayingMovies() {
-        SDImageCache.shared.clearMemory()
-        SDImageCache.shared.clearDisk(onCompletion: nil)
-        
+    
         notify(.setLoading(true))
 
         service.fetchNowPlayingMovies { [weak self] result in
@@ -67,13 +62,7 @@ final class MovieListViewModel: MovieListViewModelProtocol {
 
             switch result {
             case .success(let response):
-                // Yanıtı logla
-                print("Gelen Now Playing Movies:", response) // Yanıtın tamamını yazdır
-                
-                // Her bir film için başlık ve poster path'i yazdır
-                for movie in response.results {
-                    print("Movie Title: \(movie.title ?? "No Title"), Poster Path: \(movie.posterPath ?? "nil")")
-                }
+                print("Gelen Now Playing Movies:", response)
 
                 self.nowPlayingMovies = response.results
                 let presentations = self.nowPlayingMovies.map { MoviePresentation(movie: $0) }

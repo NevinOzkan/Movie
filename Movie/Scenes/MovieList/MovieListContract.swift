@@ -8,11 +8,10 @@
 
 import Foundation
 
-//bir ViewModel ile bir View  arasındaki iletişimi tanımlar.
+// ViewModel ile  View  arasındaki iletişimi tanımlar.
 protocol MovieListViewModelDelegate: AnyObject {
     //viewmodelden gelen Çıktıyı işler
     func handleViewModelOutput(_ output: MovieListViewModelOutput)
-    //yeni ekrana geçiş
     func navigate(to route: MovieListViewRoute)
 }
 //ViewModel’in View’a göndereceği çıktıları tanımlar
@@ -27,14 +26,23 @@ enum MovieListViewModelOutput {
 enum MovieListViewRoute {
     case detail(MovieDetailViewModel)
 }
-// temel işlevsellik. View, bu protokolü benimseyen bir ViewModel ile etkileşimde bulunur.
+
+//  View, bu protokolü benimseyen bir ViewModel ile etkileşimde bulunur.
 protocol MovieListViewModelProtocol {
-    var delegate: MovieListViewModelDelegate? { get set }
     
+    var delegate: MovieListViewModelDelegate? { get set }
     func loadUpcomingMovies(page: Int)
     func loadNowPlayingMovies()
-    //film seçilince çağrılır.
     func selectMovie(at index: Int)
 }
+
+
+
+
+
+
+
+
+
 
 //Bu yapı, MVVM (Model-View-ViewModel) mimarisi kullanılarak bir film listeleme uygulamasının ViewModel’ini tanımlar. Delegate protokolleri, görünüm ile model arasındaki etkileşimi yönetirken, enum’lar uygulamanın durumu ve navigasyon yollarını temsil eder. Protokol, ViewModel’in sağladığı işlevselliği tanımlayarak, View’un bu işlevsellik ile etkileşimde bulunmasına olanak tanır. Bu yapı, uygulamanın daha temiz ve düzenli bir şekilde yönetilmesine yardımcı olur.//
